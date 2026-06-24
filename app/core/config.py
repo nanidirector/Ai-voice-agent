@@ -1,8 +1,19 @@
-from dotenv import load_dotenv
 import os
+from dotenv import load_dotenv
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-SARVAM_API_KEY = os.getenv("SARVAM_API_KEY")
-SECRET_KEY = os.getenv("SECRET_KEY")
+class Settings:
+    # Database
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "")
+    
+    # JWT
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "supersecretkey")
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    
+    # Groq AI
+    GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
+
+# This is the object everything imports
+settings = Settings()
