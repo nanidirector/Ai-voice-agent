@@ -50,3 +50,23 @@ def chat(
     db.commit()
 
     return {"conversation_id": conv.id, "reply": reply_text}
+
+@router.get("/{conversation_id}/messages")
+def get_messages(
+    conversation_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    # Verify conversation belongs to user
+    conv = db.query(Conversation).filter(
+        Conversation.id == conversation_id,
+        Conversation.user_id == current_user.id
+    ).first()
+    if not conv:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+
+    messages = db.query(Message).filter(
+        Message.conversation_id == conversation_id
+    ).order_by(Message.id.asc()).all()
+
+    return [{"role": m.role, "content": m.content} for m in messages]
